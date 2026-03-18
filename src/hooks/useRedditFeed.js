@@ -218,8 +218,7 @@ export function useRedditFeed() {
     fetchAllLowCaloriePosts()
       .then((livePosts) => {
         if (cancelled) return;
-        setLcPosts(livePosts);
-        setLcIsLive(true);
+        if (livePosts.length > 0) { setLcPosts(livePosts); setLcIsLive(true); }
       })
       .catch(() => { /* lcPosts stays [] */ })
       .finally(() => { if (!cancelled) setLcLoading(false); });
