@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { fallbackLECPosts } from "../data/fallbackData";
+import { fallbackLECPosts, fallbackCategoryDemand } from "../data/fallbackData";
 
 // ── LEC keywords ───────────────────────────────────────────────────────────────
 // Direct brand mentions — sufficient on their own
@@ -188,7 +188,9 @@ export function useRedditFeed() {
   const refetch = useCallback(() => setFetchKey((k) => k + 1), []);
 
   // Low-calorie posts
-  const [lcPosts, setLcPosts] = useState([]);
+  const [lcPosts, setLcPosts] = useState(() =>
+    fallbackCategoryDemand.map((p) => ({ ...p, category: "general" }))
+  );
   const [lcLoading, setLcLoading] = useState(false);
   const [lcIsLive, setLcIsLive] = useState(false);
   const [lcFetchKey, setLcFetchKey] = useState(0);
