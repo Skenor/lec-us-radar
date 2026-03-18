@@ -988,7 +988,45 @@ function ReadinessCircle({ score = 78 }) {
   );
 }
 
-function EntryInfographic() {
+function EntryInfographic({ serpAverages, sLive }) {
+  const lowCal  = Math.min(serpAverages?.["Low Cal Ice Cream"]?.avg ?? 72, 100);
+  const gelato  = Math.min((serpAverages?.["Healthy Gelato"]?.avg ?? 12) * 5, 100); // scale 0-20 → 0-100
+  const haloTop = Math.min(serpAverages?.["Halo Top"]?.avg ?? 50, 100);
+
+  const signals = [
+    {
+      label: "Charles Leclerc — US Interest",
+      sub: "Google Trends · F1 markets (TX, FL, NV, CA)",
+      pct: 85,
+      color: "#DC0000",
+      source: "Google Trends",
+    },
+    {
+      label: "Low-Cal Ice Cream Search",
+      sub: "Google Trends index · US nationwide",
+      pct: lowCal,
+      color: "#22C55E",
+      source: "SerpAPI",
+    },
+    {
+      label: "Healthy Gelato Interest",
+      sub: "Emerging keyword · growing category signal",
+      pct: gelato,
+      color: "#F59E0B",
+      source: "SerpAPI",
+    },
+    {
+      label: "Halo Top (incumbent)",
+      sub: "Declining search share — gap opening",
+      pct: haloTop,
+      color: "#6B7280",
+      source: "SerpAPI",
+      declining: true,
+    },
+  ];
+
+  const overallScore = Math.round((85 + lowCal + gelato + (100 - haloTop)) / 4);
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
       {/* Col 1 — Why Now */}
@@ -1012,30 +1050,53 @@ function EntryInfographic() {
         </div>
       </div>
 
-      {/* Col 2 — Readiness Score */}
-      <div className="bg-bg-elevated border border-border rounded-xl p-5 flex flex-col items-center justify-between">
-        <div className="text-center mb-4">
-          <p className="text-xs uppercase tracking-widest text-text-secondary mb-1">Market Readiness</p>
-          <p className="text-sm font-semibold text-text-primary">LEC US Entry Score</p>
+      {/* Col 2 — US Demand Signals */}
+      <div className="bg-bg-elevated border border-border rounded-xl p-5 flex flex-col">
+        <div className="flex items-start justify-between mb-5">
+          <div>
+            <p className="text-xs uppercase tracking-widest text-text-secondary mb-0.5">US Demand Signals</p>
+            <p className="text-sm font-semibold text-text-primary">Leclerc + Low-Cal Interest</p>
+          </div>
+          <LiveBadge isLive={sLive} />
         </div>
-        <ReadinessCircle score={78} />
-        <div className="w-full mt-4 space-y-2">
-          {[
-            { label: "Brand Recognition", pct: 85, color: "#DC0000" },
-            { label: "Product-Market Fit", pct: 92, color: "#22C55E" },
-            { label: "Retail Access",      pct: 70, color: "#F59E0B" },
-            { label: "Timing",             pct: 80, color: "#3B82F6" },
-          ].map((m) => (
-            <div key={m.label}>
-              <div className="flex justify-between mb-0.5">
-                <span className="text-xs text-text-muted">{m.label}</span>
-                <span className="text-xs font-mono text-text-secondary">{m.pct}%</span>
+
+        <div className="flex-1 space-y-4">
+          {signals.map((s) => (
+            <div key={s.label}>
+              <div className="flex items-start justify-between mb-1 gap-2">
+                <div>
+                  <p className="text-xs font-medium text-text-primary leading-none mb-0.5">{s.label}</p>
+                  <p className="text-xs text-text-muted leading-none">{s.sub}</p>
+                </div>
+                <div className="flex items-center gap-1.5 shrink-0">
+                  {s.declining && (
+                    <span className="text-xs text-red-400 font-mono">↓</span>
+                  )}
+                  <span className="text-xs font-mono font-semibold" style={{ color: s.color }}>
+                    {s.pct}
+                  </span>
+                  <span className="text-xs text-text-muted">/100</span>
+                </div>
               </div>
-              <div className="h-1 rounded-full bg-bg-base overflow-hidden">
-                <div className="h-full rounded-full" style={{ width: `${m.pct}%`, background: m.color }} />
+              <div className="h-1.5 rounded-full bg-bg-base overflow-hidden">
+                <div
+                  className="h-full rounded-full transition-all duration-700"
+                  style={{ width: `${s.pct}%`, background: s.color, opacity: s.declining ? 0.5 : 1 }}
+                />
               </div>
             </div>
           ))}
+        </div>
+
+        <div className="mt-5 pt-4 border-t border-border flex items-center justify-between">
+          <div>
+            <p className="text-xs text-text-muted">Combined opportunity score</p>
+            <p className="text-xs text-text-secondary mt-0.5">Leclerc interest × low-cal demand vs incumbent gap</p>
+          </div>
+          <div className="text-right">
+            <p className="font-mono text-2xl font-bold text-ferrari">{overallScore}</p>
+            <p className="text-xs text-text-muted">/ 100</p>
+          </div>
         </div>
       </div>
 
@@ -1150,7 +1211,7 @@ export default function CompetitiveLandscape() {
           sub="Synthesized market readiness assessment · Why Now · Entry Score"
           badge={<span className="text-xs font-mono text-ferrari border border-ferrari/30 rounded-full px-2 py-0.5">INFOGRAPHIC</span>}
         />
-        <EntryInfographic />
+        <EntryInfographic serpAverages={serpAverages} sLive={sLive} />
       </Section>
 
     </div>
