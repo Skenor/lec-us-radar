@@ -995,37 +995,27 @@ function EntryInfographic({ serpAverages, sLive }) {
 
   const signals = [
     {
-      label: "Charles Leclerc — US Interest",
-      sub: "Google Trends · F1 markets (TX, FL, NV, CA)",
-      pct: 85,
-      color: "#DC0000",
-      source: "Google Trends",
-    },
-    {
       label: "Low-Cal Ice Cream Search",
       sub: "Google Trends index · US nationwide",
       pct: lowCal,
       color: "#22C55E",
-      source: "SerpAPI",
     },
     {
       label: "Healthy Gelato Interest",
       sub: "Emerging keyword · growing category signal",
       pct: gelato,
       color: "#F59E0B",
-      source: "SerpAPI",
     },
     {
       label: "Halo Top (incumbent)",
       sub: "Declining search share — gap opening",
       pct: haloTop,
       color: "#6B7280",
-      source: "SerpAPI",
       declining: true,
     },
   ];
 
-  const overallScore = Math.round((85 + lowCal + gelato + (100 - haloTop)) / 4);
+  const overallScore = Math.round((lowCal + gelato + (100 - haloTop)) / 3);
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
@@ -1055,7 +1045,7 @@ function EntryInfographic({ serpAverages, sLive }) {
         <div className="flex items-start justify-between mb-5">
           <div>
             <p className="text-xs uppercase tracking-widest text-text-secondary mb-0.5">US Demand Signals</p>
-            <p className="text-sm font-semibold text-text-primary">Leclerc + Low-Cal Interest</p>
+            <p className="text-sm font-semibold text-text-primary">Low-Cal Gelato Demand — US</p>
           </div>
           <LiveBadge isLive={sLive} />
         </div>
